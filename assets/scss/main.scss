@@ -1,0 +1,15 @@
+@charset "utf-8";
+
+@import "./common_admin.scss";
+@import "./common_client.scss";
+
+@import "./layouts/admin/header.scss";
+@import "./layouts/client/header.scss";
+
+@import "./pages/login.scss";
+
+@import "./pages/admin/regist.scss";
+@import "./pages/client/regist.scss";
+
+@import "./skin_admin.scss";
+@import "./skin_client.scss";

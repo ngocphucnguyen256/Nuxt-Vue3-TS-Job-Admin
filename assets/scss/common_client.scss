@@ -1,0 +1,14 @@
+@charset 'UTF-8';
+@use './foundation/colors';
+@use './foundation/text';
+@use './foundation/mixin' as mi;
+
+
+.was-validated .custom-control-input:valid ~ .custom-control-label, .custom-control-input.is-valid ~ .custom-control-label{
+  color: black;
+}
+
+.was-validated .custom-control-input:valid:checked ~ .custom-control-label::before, .custom-control-input.is-valid:checked ~ .custom-control-label::before{
+  border-color: #28a745;
+  background-color: #28a745;
+}
