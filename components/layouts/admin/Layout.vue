@@ -7,6 +7,10 @@ const items = [
     to: "/admin/dashboard",
   },
   {
+    title: "Chat app",
+    to: "/admin/chat",
+  },
+  {
     title: "取引先一覧",
     to: "/admin/client",
   },
