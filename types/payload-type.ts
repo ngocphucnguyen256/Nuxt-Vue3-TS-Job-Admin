@@ -1,5 +1,6 @@
 export interface LoginPayloadType {
-  email: string;
+  username: string;
+  email?: string;
   password: string;
 }
 

@@ -12,13 +12,17 @@ type MasterKeysType = {
     BASE_ENV: string;
     PORT: number;
     API_PORT?: number;
-    PREFIX: string;
+    PREFIX?: string;
   };
 };
 
 const masterKeys: MasterKeysType = {
   ...MasterKeys,
 };
+
+const BASE_API_URL = `${masterKeys[appEnv].BASE_URL}${
+  masterKeys[appEnv].API_PORT ? `:${masterKeys[appEnv].API_PORT}` : ""
+}${masterKeys[appEnv].PREFIX ? "/" + masterKeys[appEnv].PREFIX : ""}`;
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 const defineNuxtConfig: NuxtConfig = {
@@ -27,9 +31,7 @@ const defineNuxtConfig: NuxtConfig = {
     apiKey: "", // Default to an empty string, automatically set at runtime using process.env.NUXT_API_KEY
     public: {
       baseURL: masterKeys[appEnv].BASE_URL,
-      BASE_API_URL: `${masterKeys[appEnv].BASE_URL}${
-        masterKeys[appEnv].API_PORT ? `:${masterKeys[appEnv].API_PORT}` : ""
-      }/${masterKeys[appEnv].PREFIX}`,
+      BASE_API_URL,
     },
   },
 
@@ -108,9 +110,17 @@ const defineNuxtConfig: NuxtConfig = {
   },
   buildModules: ["@nuxt/typescript-build"],
 
-  modules: ["@pinia/nuxt"],
+  modules: ["@pinia/nuxt", "@nuxtjs/apollo"],
   pinia: {
     autoImports: ["defineStore", "acceptHMRUpdate"],
+  },
+  apollo: {
+    autoImports: true,
+    clients: {
+      default: {
+        httpEndpoint: BASE_API_URL,
+      },
+    },
   },
 
   plugins: ["@/plugins/repositories", "@/plugins/ofetch", "@/plugins/vuetify"],
