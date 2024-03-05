@@ -2,14 +2,10 @@
   // https://nuxt.com/docs/guide/concepts/typescript
   "extends": "./.nuxt/tsconfig.json",
   "compilerOptions": {
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "esModuleInterop": true,
     "strict": true,
     "skipLibCheck": true,
     "ignoreDeprecations": "5.0",
     "forceConsistentCasingInFileNames": false,
-    "strictPropertyInitialization": false,
     "types": [
       "@pinia/nuxt"
     ]

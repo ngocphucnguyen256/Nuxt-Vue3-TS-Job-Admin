@@ -18,7 +18,10 @@
               <InputField
                 name="メール"
                 :model-value="email"
-                :rules="[...validation.requiredWithName('メール', email)]"
+                :rules="[
+                  ...validation.requiredWithName('メール', email),
+                  ...validation.email,
+                ]"
                 class="mb-2"
                 @update:model-value="email = $event"
               />
@@ -117,7 +120,7 @@ const submit = () => {
 const handleLogin = async () => {
   if (formRef.value && valid.value) {
     const payload = {
-      username: email.value,
+      email: email.value,
       password: password.value,
     };
     loading.value = true;

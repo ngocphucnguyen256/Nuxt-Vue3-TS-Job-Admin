@@ -3,15 +3,14 @@ const MasterKeys = {
     BASE_URL: "http://localhost",
     BASE_ENV: "local",
     PORT: 4000,
-    API_PORT: 7000,
-    PREFIX: "graphql",
+    API_PORT: 3008,
+    PREFIX: "api",
   },
   production: {
     BASE_URL: "",
     BASE_ENV: "production",
     PORT: 4000,
-    API_PORT: 7000,
-    PREFIX: "graphql",
+    PREFIX: "api",
   },
 };
 

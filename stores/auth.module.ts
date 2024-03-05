@@ -32,56 +32,35 @@ export const useAuthStore = defineStore("auth", {
     async login(
       payload: LoginPayloadType,
     ): Promise<{ success: boolean; message: any } | undefined> {
-      // Define the GraphQL mutation
-      const mutation = gql`
-        mutation createUserSession($username: String!, $password: String!) {
-          createUserSession(username: $username, password: $password) {
-            user {
-              username
-            }
-          }
-        }
-      `;
-
-      try {
-        // Execute the mutation using useMutation
-        const { mutate, onDone, onError } = useMutation(mutation, {
-          variables: {
-            username: payload.username,
-            password: payload.password,
-          },
-        });
-
-        let success = false;
-        let message = "";
-
-        // Handle successful mutation
-        onDone((response) => {
-          const userDetail = {
-            email: payload.username || "", // Assuming you have a way to get the user's email from the payload or response
+      const { $repositories } = useNuxtApp();
+      const {
+        success = null,
+        body = {},
+        message = null,
+      } = await $repositories.auth.login(payload).catch((e) => {
+        if (e.response?.status === 403) {
+          return {
+            success: false,
+            message: "メールアドレスまたはパスワードが間違っています!",
           };
-          this.setAuth(response.data.createUserSession, userDetail); // Adjust according to your actual response structure
-          success = true;
-          message = "Login successful";
-        });
-
-        // Handle mutation error
-        onError((error) => {
-          success = false;
-          message = error.message || "Login failed";
-        });
-
-        // Execute the mutation
-        await mutate();
-
-        return { success, message };
-      } catch (e: any) {
-        // Handle errors outside of GraphQL errors (network issues, etc.)
+        }
         return {
           success: false,
-          message: e.message || "An error occurred during login",
+          message: "Server error",
         };
+      });
+      if (success) {
+        // have another api to get this data later, use this mock data for now
+        const userDetail = {
+          email: payload.email,
+        };
+        this.setAuth(body, userDetail);
+        return { success: true, message: success.message };
       }
+      return {
+        success: false,
+        message: message || body.message,
+      };
     },
     setDataLocalStorage() {
       localStorage.setItem("token", JSON.stringify(this.auth.access_token));
