@@ -6,7 +6,8 @@ export default defineNuxtPlugin((nuxtApp) => {
   return {
     provide: {
       repositories: {
-        auth: repositoryWithFetch(`${BASE_API_URL}/auth`),
+        auth: repositoryWithFetch(`${BASE_API_URL}/user`),
+        chat: repositoryWithFetch(`${BASE_API_URL}/chat`),
         common: repositoryWithFetch(`${BASE_API_URL}`),
         client: repositoryWithFetch(`${BASE_API_URL}/clients`),
         project: repositoryWithFetch(`${BASE_API_URL}/projects`),

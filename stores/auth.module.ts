@@ -33,11 +33,7 @@ export const useAuthStore = defineStore("auth", {
       payload: LoginPayloadType,
     ): Promise<{ success: boolean; message: any } | undefined> {
       const { $repositories } = useNuxtApp();
-      const {
-        success = null,
-        body = {},
-        message = null,
-      } = await $repositories.auth.login(payload).catch((e) => {
+      const res = await $repositories.auth.login(payload).catch((e) => {
         if (e.response?.status === 403) {
           return {
             success: false,
@@ -49,17 +45,26 @@ export const useAuthStore = defineStore("auth", {
           message: "Server error",
         };
       });
-      if (success) {
+      if (res.data) {
         // have another api to get this data later, use this mock data for now
         const userDetail = {
           email: payload.email,
         };
-        this.setAuth(body, userDetail);
-        return { success: true, message: success.message };
+        this.setAuth(
+          {
+            access_token: res.data.token,
+            // token_type: body.token_type,
+            // time: body.expires_in,
+            // expires_in: 0,
+            // user: userDetail,
+          },
+          userDetail,
+        );
+        return { success: true, message: "Login success" };
       }
       return {
         success: false,
-        message: message || body.message,
+        message: res.message || "Server error",
       };
     },
     setDataLocalStorage() {
@@ -73,12 +78,12 @@ export const useAuthStore = defineStore("auth", {
       localStorage.removeItem("user");
     },
     setAuth(
-      payload: Auth,
+      payload: Pick<Auth, "access_token">,
       userDetail: {
         email: string;
       },
     ) {
-      this.auth = payload ?? defaultAuth;
+      this.auth.access_token = payload.access_token;
       this.auth.user = userDetail;
       this.auth.expires_in =
         Date.now() + (this.auth.time * 1000 || TOKEN_EXPIRED_TIME);

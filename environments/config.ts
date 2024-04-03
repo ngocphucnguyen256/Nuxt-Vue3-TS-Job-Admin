@@ -3,7 +3,7 @@ const MasterKeys = {
     BASE_URL: "http://localhost",
     BASE_ENV: "local",
     PORT: 4000,
-    API_PORT: 3008,
+    API_PORT: 7000,
     PREFIX: "api",
   },
   production: {
