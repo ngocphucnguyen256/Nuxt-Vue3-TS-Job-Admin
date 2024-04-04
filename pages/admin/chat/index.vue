@@ -65,7 +65,7 @@ const crateChatRoom = async () => {
 
   const res = await chatStore.createChatRoom({ name: newRoomName.value });
   if (res) {
-    chatRooms.value.push(res);
+    chatRooms.value.push(res.data);
   }
 };
 
@@ -74,7 +74,7 @@ const handleToDetail = (id: any) => {
 };
 
 onMounted(async () => {
-  const res = await chatStore.getAllChatRooms();
+  const res = await chatStore.getAllChatRooms({});
   chatRooms.value = res;
 });
 </script>
