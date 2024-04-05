@@ -24,7 +24,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
   }
   // have token + login page => redirect to home page
   const shouldLogout = !!(
-    localStorage.getItem("token") &&
+    localStorage.getItem("token") && localStorage.getItem("token") !=="undefined" &&
     (to.path === "/admin/login" || to.path === "/staff/login")
   );
   if (shouldLogout) {
@@ -44,7 +44,15 @@ export default defineNuxtRouteMiddleware((to, from) => {
     //   authStore.clearAuth();
     //   return;
     // }
-    authStore.setToken(JSON.parse(localStorage.getItem("token") ?? ""));
-    authStore.setUser(JSON.parse(localStorage.getItem("user") ?? ""));
+    const token = localStorage.getItem("token");
+    const user = localStorage.getItem("user");
+    if (token && token!=="undefined") {
+      console.log(token);
+      authStore.setToken(JSON.parse(token ?? ""));
+    }
+    if (user) {
+      authStore.setUser(JSON.parse(user));
+    }
+
   }
 });

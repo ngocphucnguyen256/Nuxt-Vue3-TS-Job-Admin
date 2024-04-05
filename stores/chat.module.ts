@@ -146,5 +146,9 @@ export const useChatStore = defineStore("chat", {
         });
       return res;
     },
+    getWsURL() {
+      const { $repositories } = useNuxtApp();
+      return $repositories.ws.ws("chat");
+    },
   },
 });

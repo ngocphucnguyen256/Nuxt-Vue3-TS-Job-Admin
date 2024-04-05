@@ -89,7 +89,7 @@ const toChangePassword = () => {
 
 <style scoped lang="scss">
 .bg-blue {
-  background-color: hsl(193, 82%, 31%) !important;
+  background-color: hsl(292, 82%, 40%) !important;
 }
 
 .bg-default {

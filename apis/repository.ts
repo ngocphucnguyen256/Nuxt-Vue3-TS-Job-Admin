@@ -17,12 +17,18 @@ interface ApiService {
   params(payload: any): Promise<any>;
   me(): Promise<any>;
   download(payload: any): Promise<any>;
+  ws(path: string): string;
 }
 
 export default ($fetch: any) =>
   (resource: string): ApiService => ({
     index(payload: any): Promise<any> {
       return $fetch(`${resource}`, { params: payload });
+    },
+
+    ws(path: string): string {
+      const ws = resource.replace("http", "ws");
+      return `${ws}/${path}`;
     },
 
     all(): Promise<any> {

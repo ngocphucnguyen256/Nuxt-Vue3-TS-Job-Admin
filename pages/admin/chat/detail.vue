@@ -19,6 +19,7 @@
               name="New message"
               :model-value="newMessage"
               @update:model-value="newMessage = $event"
+              @keydown.enter="sendMessage"
             />
           </v-col>
           <v-col cols="2">
@@ -40,7 +41,7 @@ const chatStore = useChatStore();
 const authStore = useAuthStore();
 const router = useRouter();
 
-const titleH2 = "Chat app";
+const titleH2 = ref("Chat app");
 const newMessage = ref("");
 const messages = ref<
   Array<{
@@ -59,21 +60,21 @@ const getData = async () => {
   }
 };
 
-const ws = new WebSocket("ws://localhost:7100");
+// WebSocket connection setup moved to a separate function for clarity
+let ws: WebSocket; // Declare ws here to ensure it's accessible in your setup function scope
 
 const connectWebSocket = () => {
-  // Assuming your WebSocket server is running on the same host but different port
+  // ws = new WebSocket("ws://localhost:7100/");
+  ws = new WebSocket(chatStore.getWsURL());
+
   ws.onopen = () => {
     console.log("WebSocket connected");
-    // Optionally, send a message to join a specific room after connecting
     sendJoinRoomMessage();
   };
 
   ws.onmessage = (event) => {
     const data = JSON.parse(event.data);
     console.log("Message from server ", data);
-    // Handle incoming messages
-    // add message to messages
     messages.value.push(data);
   };
 
@@ -83,42 +84,39 @@ const connectWebSocket = () => {
 
   ws.onclose = () => {
     console.log("WebSocket disconnected");
-    // Optionally, reconnect or cleanup
   };
 };
 
 const sendMessage = () => {
-  if (ws.readyState === WebSocket.OPEN) {
-    // Include the JWT token with every message
-    const token = authStore.auth.access_token; // Assuming you're using @nuxtjs/auth for authentication
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    const token = authStore.auth.access_token;
     const messageData = {
       type: "MESSAGE",
       token,
       content: newMessage.value,
-      roomId: id as string, // Specify the room ID
+      roomId: id as string,
     };
     ws.send(JSON.stringify(messageData));
-    newMessage.value = ""; // Clear message input after sending
-    return;
+    newMessage.value = "";
+  } else {
+    console.error("WebSocket is not connected");
   }
-  console.error("WebSocket is not connected");
 };
 
 const sendJoinRoomMessage = () => {
-  // Example function to join a room
   const token = authStore.auth.access_token;
   const joinRoomData = {
     token,
     type: "JOIN",
-    roomId: id as string, // Specify the room ID
+    roomId: id as string,
   };
   ws.send(JSON.stringify(joinRoomData));
+  console.log("Room joined");
 };
 
 onMounted(async () => {
   await getData();
   connectWebSocket();
-  sendJoinRoomMessage();
 });
 </script>
 
