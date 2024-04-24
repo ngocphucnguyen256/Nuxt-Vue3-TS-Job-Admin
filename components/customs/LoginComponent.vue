@@ -8,7 +8,13 @@
           </div>
           <div class="l-login__inner">
             <h2 class="mb-10">
-              {{ isForgotPasswordUI ? "パスワードをお忘れですか" : "ログイン" }}
+              {{
+                isForgotPasswordUI
+                  ? "パスワードをお忘れですか"
+                  : isSignUp
+                  ? "Sign Up"
+                  : "ログイン"
+              }}
             </h2>
             <ErrorLine
               :message="errorLine.message"
@@ -51,7 +57,13 @@
                 color="blue-accent-4"
                 @click="submit"
               >
-                {{ isForgotPasswordUI ? "Send reset password email" : "Login" }}
+                {{
+                  isForgotPasswordUI
+                    ? "Send reset password email"
+                    : isSignUp
+                    ? "Sign Up"
+                    : "Login"
+                }}
               </v-btn>
               <div
                 v-if="isClient"
@@ -69,6 +81,15 @@
                 @click="register"
               >
                 Register Now
+              </v-btn>
+
+              <v-btn
+                style="width: 100%"
+                theme="lightTheme"
+                variant="outlined"
+                @click="ToggleSignUpUI"
+              >
+                {{ isSignUp ? "Login" : "Sign Up" }}
               </v-btn>
             </v-form>
             <!-- /.form-->
@@ -92,6 +113,8 @@ const props = withDefaults(defineProps<Props>(), {
   isClient: false,
 });
 
+const isSignUp = ref(false);
+
 const isClient = computed(() => props.isClient);
 
 const validation = ref(validationUtil.field);
@@ -112,9 +135,17 @@ const errorLine = ref({
 const submit = () => {
   if (isForgotPasswordUI.value) {
     handleForgotPassword();
-  } else {
-    handleLogin();
+    return;
   }
+  if (isSignUp.value) {
+    handleSignUp();
+    return;
+  }
+  handleLogin();
+};
+
+const ToggleSignUpUI = () => {
+  isSignUp.value = !isSignUp.value;
 };
 
 const handleLogin = async () => {
@@ -128,6 +159,30 @@ const handleLogin = async () => {
     loading.value = false;
     if (res && res.success) {
       router.push(isClient.value ? "/staff/my-page" : "/admin/dashboard");
+      return;
+    }
+    errorLine.value = {
+      message: res?.message ?? "Something went wrong",
+      success: false,
+    };
+  }
+};
+
+const handleSignUp = async () => {
+  if (formRef.value && valid.value) {
+    const payload = {
+      email: email.value,
+      password: password.value,
+    };
+    loading.value = true;
+    const res = await store.signUp(payload);
+    loading.value = false;
+    if (res && res.success) {
+      errorLine.value = {
+        message: "Sign up successfully",
+        success: true,
+      };
+      isSignUp.value = false;
       return;
     }
     errorLine.value = {

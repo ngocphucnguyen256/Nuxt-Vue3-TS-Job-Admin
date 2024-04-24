@@ -67,6 +67,32 @@ export const useAuthStore = defineStore("auth", {
         message: res.message || "Server error",
       };
     },
+    async signUp(
+      payload: LoginPayloadType,
+    ): Promise<{ success: boolean; message: any } | undefined> {
+      const { $repositories } = useNuxtApp();
+      const res = await $repositories.auth
+        .custom("signup", "POST", payload)
+        .catch((e) => {
+          if (e.response?.status === 403) {
+            return {
+              success: false,
+              message: "Email already exists!",
+            };
+          }
+          return {
+            success: false,
+            message: "Server error",
+          };
+        });
+      if (res) {
+        return { success: true, message: "Signup success" };
+      }
+      return {
+        success: false,
+        message: res.message || "Server error",
+      };
+    },
     setDataLocalStorage() {
       localStorage.setItem("token", JSON.stringify(this.auth.access_token));
       localStorage.setItem("expires_in", JSON.stringify(this.auth.expires_in));
